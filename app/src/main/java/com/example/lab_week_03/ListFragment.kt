@@ -5,11 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.content.Context
-import android.util.Log
-import androidx.navigation.Navigation
-
-
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,20 +16,9 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-//class ListFragment : Fragment(), View.OnClickListener{
-class ListFragment : Fragment(){
+class ListFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
-//    private lateinit var coffeeListener: CoffeeListener;
-//    override fun onAttach(context: Context) {
-//        super.onAttach(context)
-//        if(context is CoffeeListener){
-//            coffeeListener = context
-//        }
-//        else{
-//            throw RuntimeException("Must implement CoffeeListener")
-//        }
-//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,31 +38,31 @@ class ListFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Tambahkan minimal 5 item
         val coffeeList = listOf<View>(
             view.findViewById(R.id.affogato),
             view.findViewById(R.id.americano),
-            view.findViewById(R.id.latte)
+            view.findViewById(R.id.latte),
+            view.findViewById(R.id.espresso),    // pastikan ada di layout
+            view.findViewById(R.id.cappuccino)  // pastikan ada di layout
         )
-// coffeeList.forEach{
-// it.setOnClickListener(this)
-// }
-        coffeeList.forEach{ coffee ->
-            val fragmentBundle = Bundle()
-            fragmentBundle.putInt(COFFEE_ID, coffee.id)
-            coffee.setOnClickListener(
-                Navigation.createNavigateOnClickListener(
-                    R.id.coffee_id_action, fragmentBundle)
-            )
+
+        // Set listener untuk masing-masing item
+        coffeeList.forEach { coffee ->
+            coffee?.setOnClickListener {
+                val detailFragment = DetailFragment.newInstance(coffee.id)
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, detailFragment)
+                    .addToBackStack(null) // penting agar tombol back di DetailFragment bekerja
+                    .commit()
+            }
         }
     }
-// override fun onClick(v: View?) {
-// v?.let{
-// coffee -> coffeeListener.onSelected(coffee.id)
-// }
-// }
 
     companion object {
         const val COFFEE_ID = "COFFEE_ID"
+
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
@@ -87,7 +71,6 @@ class ListFragment : Fragment(){
          * @param param2 Parameter 2.
          * @return A new instance of fragment ListFragment.
          */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             ListFragment().apply {
